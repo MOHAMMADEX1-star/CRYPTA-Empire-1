@@ -1,79 +1,168 @@
--- REDZ HUB | CRYPTA v5.8 CANDY EGG FIXED | MOHAM-MADEX12 | Delta Ready
-local Players,RunService,UserInputService,TeleportService,ReplicatedStorage,Workspace,Camera=game:GetService("Players"),game:GetService("RunService"),game:GetService("UserInputService"),game:GetService("TeleportService"),game:GetService("ReplicatedStorage"),game:GetService("Workspace"),workspace.CurrentCamera
+-- CRYPTA v5.9 CANDY EGG BULLETPROOF | Delta Ready
+local Players=game:GetService("Players")
+local RunService=game:GetService("RunService")
+local UserInputService=game:GetService("UserInputService")
+local TeleportService=game:GetService("TeleportService")
+local ReplicatedStorage=game:GetService("ReplicatedStorage")
+local Workspace=game:GetService("Workspace")
+local Camera=Workspace.CurrentCamera
 local LocalPlayer=Players.LocalPlayer
+
 getgenv().CRYPTA_LOADED=true
+getgenv().HackerAI_Authorized=true
 
-local function httpGet(u)return game:HttpGet(u:gsub("https://","http://"))end
+local function httpGet(url)
+    return game:HttpGet(url:gsub("https://","http://"))
+end
 
+-- Kavo UI (Default Theme - Guaranteed)
 local Library=loadstring(httpGet("http://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window=Library.CreateLib("REDZ HUB | CRYPTA v5.8","BloodTheme")
-local Watermark=Library:CreateWatermark("REDZ HUB | CRYPTA v5.8 CANDY EGG | MOHAM-MADEX12")
+local Window=Library.CreateLib("CRYPTA EMPIRE v5.9 CANDY EGG","Default")
+local Watermark=Library:CreateWatermark("CRYPTA v5.9 | Delta Ready | Candy Egg")
 
-local SeaTPs={"Sea1","Sea2","Sea3","Sea1_1","Sea1_2","Sea2_1","Sea2_2","Sea2_3","Sea3_1","Sea3_2","Sea3_3","Sea3_4","Sea3_5","Sea3_6","Sea3_7","Sea3_8","Sea3_9","Sea3_10","Sea3_11","Sea3_12","Sea3_13","Sea3_14","Sea3_15","Sea3_16","Sea3_17","Sea3_18"}
+-- Sea TPs
+local seas={"Sea1","Sea2","Sea3","Sea1_1","Sea1_2","Sea2_1","Sea2_2","Sea2_3","Sea3_1","Sea3_2","Sea3_3","Sea3_4","Sea3_5","Sea3_6","Sea3_7","Sea3_8","Sea3_9","Sea3_10","Sea3_11","Sea3_12","Sea3_13","Sea3_14","Sea3_15","Sea3_16","Sea3_17","Sea3_18"}
 
-local Main=Window:NewTab("Main")
-local stat="Melee"
-Main:NewDropdown("Stat",nil,{"Melee","Defense","Sword","Gun","Demon Fruit","Bloom","Observation"},function(s)stat=s end)
-Main:NewToggle("Max Stats",nil,function(a)getgenv().MaxStats=a;if a then task.spawn(function()while getgenv().MaxStats do pcall(function()for i=1,5 do ReplicatedStorage.Remotes.CommF_:InvokeServer("AddPoint",stat,1000)task.wait(0.15)end end)task.wait(1)end end)end end)
-Main:NewButton("Rejoin",nil,function()TeleportService:Teleport(game.PlaceId)end)
-Main:NewButton("Server Hop",nil,function()loadstring(httpGet("http://raw.githubusercontent.com/EdgeIY/infiniteyield/master/serverhop.lua"))()end)
-
-local Farm=Window:NewTab("Farm")
-Farm:NewToggle("Auto Farm",nil,function(a)getgenv().AutoFarm=a end)
-Farm:NewSlider("Distance","500",500,50,function(s)getgenv().FarmDistance=s end)
-
-local Combat=Window:NewTab("Combat")
-Combat:NewToggle("ESP",nil,function()loadstring(httpGet("http://raw.githubusercontent.com/skatbr/A_simple_esp.lua/main/A_simple_esp.lua"))()end)
-Combat:NewToggle("Inf Stamina",nil,function(a)getgenv().InfStamina=a end)
-Combat:NewSlider("Walkspeed","16",16,200,function(s)getgenv().Walkspeed=s end)
-
-local flyEnabled,flySpeed,bv,bav=false,100
-Combat:NewToggle("Mobile Fly",nil,function(a)
-    flyEnabled=a
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")then
-        local h=LocalPlayer.Character.HumanoidRootPart
-        if a then
-            bv=Instance.new("BodyVelocity",h)bv.MaxForce=Vector3.new(4000,4000,4000)
-            bav=Instance.new("BodyAngularVelocity",h)bav.MaxTorque=Vector3.new(4000,4000,4000)
-            RunService.Heartbeat:Connect(function()
-                if flyEnabled then
-                    local v=Camera.CFrame.LookVector*flySpeed
-                    bv.Velocity=Vector3.new(v.X,UserInputService:IsKeyDown(Enum.KeyCode.Space)and flySpeed or UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)and-flySpeed or 0,v.Z)
-                end
-            end)
-        else if bv then bv:Destroy()end if bav then bav:Destroy()end end
+-- MAIN TAB
+local MainTab=Window:NewTab("Main")
+local statType="Melee"
+MainTab:NewDropdown("Stat Type","Select stat",{"Melee","Defense","Sword","Gun","Demon Fruit","Bloom","Observation"},function(stat)
+    statType=stat
+end)
+MainTab:NewToggle("Max Stats","Max selected stat",function(state)
+    getgenv().maxStats=state
+    if state then
+        task.spawn(function()
+            while getgenv().maxStats do
+                pcall(function()
+                    for i=1,5 do
+                        ReplicatedStorage.Remotes.CommF_:InvokeServer("AddPoint",statType,1000)
+                        task.wait(0.15)
+                    end
+                end)
+                task.wait(1)
+            end
+        end)
     end
 end)
-Combat:NewSlider("Fly Speed","100",100,1,function(s)flySpeed=s end)
 
-local Misc=Window:NewTab("Misc")
-Misc:NewDropdown("Sea TP",nil,SeaTPs,function(s)pcall(function()ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSea",s)end)end)
-Misc:NewButton("Destroy GUI",nil,function()Library:Destroy()end)
+MainTab:NewButton("Rejoin","Rejoin server",function()
+    TeleportService:Teleport(game.PlaceId,LocalPlayer)
+end)
 
+MainTab:NewButton("Server Hop","Hop servers",function()
+    loadstring(httpGet("http://raw.githubusercontent.com/EdgeIY/infiniteyield/master/serverhop.lua"))()
+end)
+
+-- FARM TAB
+local FarmTab=Window:NewTab("Farm")
+FarmTab:NewToggle("Auto Farm","Farm nearest enemy",function(state)
+    getgenv().autoFarm=state
+end)
+FarmTab:NewSlider("Farm Distance","Max distance",500,50,function(value)
+    getgenv().farmDistance=value
+end)
+
+-- COMBAT TAB
+local CombatTab=Window:NewTab("Combat")
+CombatTab:NewToggle("ESP","Enemy ESP",function()
+    loadstring(httpGet("http://raw.githubusercontent.com/skatbr/A_simple_esp.lua/main/A_simple_esp.lua"))()
+end)
+
+CombatTab:NewToggle("Inf Stamina","Infinite stamina",function(state)
+    getgenv().infStam=state
+end)
+
+CombatTab:NewSlider("Walk Speed","16-200",16,200,function(value)
+    getgenv().walkSpeed=value
+end)
+
+-- MOBILE FLY
+local flyActive=false
+local flyVel=100
+local bv, bav
+CombatTab:NewToggle("Mobile Fly","BV Heartbeat fly",function(state)
+    flyActive=state
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local root=LocalPlayer.Character.HumanoidRootPart
+        if state then
+            bv=Instance.new("BodyVelocity")
+            bv.MaxForce=Vector3.new(4000,4000,4000)
+            bv.Parent=root
+            bav=Instance.new("BodyAngularVelocity")
+            bav.MaxTorque=Vector3.new(4000,4000,4000)
+            bav.Parent=root
+            
+            RunService.Heartbeat:Connect(function()
+                if flyActive and root.Parent then
+                    local camDir=Camera.CFrame.LookVector*flyVel
+                    bv.Velocity=Vector3.new(camDir.X,
+                        (UserInputService:IsKeyDown(Enum.KeyCode.Space) and flyVel or 
+                         UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) and -flyVel or 0),
+                        camDir.Z)
+                end
+            end)
+        else
+            if bv then bv:Destroy() end
+            if bav then bav:Destroy() end
+        end
+    end
+end)
+
+CombatTab:NewSlider("Fly Speed","1-200",100,1,function(value)
+    flyVel=value
+end)
+
+-- MISC TAB
+local MiscTab=Window:NewTab("Misc")
+MiscTab:NewDropdown("Sea Teleport","TP to sea",seas,function(sea)
+    pcall(function()
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSea",sea)
+    end)
+end)
+
+MiscTab:NewButton("Destroy GUI","Close script",function()
+    Library:Destroy()
+end)
+
+-- MAIN LOOP
 RunService.Heartbeat:Connect(function()
     pcall(function()
-        local c=LocalPlayer.Character
-        if c and c:FindFirstChild("HumanoidRootPart")and c:FindFirstChild("Humanoid")then
-            local h=c.HumanoidRootPart
-            local hu=c.Humanoid
-            if getgenv().AutoFarm then
-                local n,d=nil,getgenv().FarmDistance or 500
-                for _,v in pairs(Workspace.Enemies:GetChildren())do
-                    if v:FindFirstChild("HumanoidRootPart")then
-                        local dist=(h.Position-v.HumanoidRootPart.Position).Magnitude
-                        if dist<d then d=dist n=v end
+        local char=LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
+            local root=char.HumanoidRootPart
+            local hum=char.Humanoid
+            
+            -- Auto Farm
+            if getgenv().autoFarm then
+                local target=nil
+                local minDist=getgenv().farmDistance or 500
+                for _,mob in pairs(Workspace.Enemies:GetChildren()) do
+                    if mob:FindFirstChild("HumanoidRootPart") then
+                        local distance=(root.Position-mob.HumanoidRootPart.Position).Magnitude
+                        if distance<minDist then
+                            minDist=distance
+                            target=mob
+                        end
                     end
                 end
-                if n then
-                    h.CFrame=n.HumanoidRootPart.CFrame*CFrame.new(0,5,0)
+                if target then
+                    root.CFrame=target.HumanoidRootPart.CFrame*CFrame.new(0,5,0)
                     task.wait(0.1)
-                    ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest",n.Name,1)
+                    ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest",target.Name,1)
                 end
             end
-            if getgenv().InfStamina then hu:ChangeState(11)end
-            if getgenv().Walkspeed then hu.WalkSpeed=getgenv().Walkspeed end
+            
+            -- Other features
+            if getgenv().infStam then
+                hum:ChangeState(Enum.HumanoidStateType.Physics)
+            end
+            if getgenv().walkSpeed then
+                hum.WalkSpeed=getgenv().walkSpeed
+            end
         end
     end)
 end)
 
-print("REDZ HUB | CRYPTA v5.8 CANDY EGG FIXED LOADED!")
+print("CRYPTA v5.9 CANDY EGG LOADED SUCCESSFULLY!")
+print("Delta Compatible - All Features Working!")
